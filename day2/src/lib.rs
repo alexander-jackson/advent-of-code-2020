@@ -1,4 +1,5 @@
 use std::convert::TryFrom;
+use std::ops::Range;
 use std::str::FromStr;
 
 use lazy_static::lazy_static;
@@ -8,33 +9,22 @@ lazy_static! {
     static ref RE: Regex = Regex::new(r"^(\d*)-(\d*) ([a-z]): ([a-z]*)$").unwrap();
 }
 
-pub struct Range {
-    lower: usize,
-    upper: usize,
-}
-
-impl Range {
-    pub fn in_bounds(&self, value: usize) -> bool {
-        self.lower <= value && value <= self.upper
-    }
-}
-
 pub struct PasswordConstraint {
-    range: Range,
+    range: Range<usize>,
     letter: char,
     password: String,
 }
 
 impl PasswordConstraint {
     pub fn basic(&self) -> bool {
-        self.range
-            .in_bounds(self.password.chars().filter(|c| *c == self.letter).count())
+        let count = self.password.chars().filter(|c| *c == self.letter).count();
+        self.range.start <= count && count <= self.range.end
     }
 
     pub fn complex(&self) -> bool {
         // Get the 2 characters
-        let left = self.password.chars().nth(self.range.lower - 1).unwrap();
-        let right = self.password.chars().nth(self.range.upper - 1).unwrap();
+        let left = self.password.chars().nth(self.range.start - 1).unwrap();
+        let right = self.password.chars().nth(self.range.end - 1).unwrap();
 
         (left == self.letter) ^ (right == self.letter)
     }
@@ -60,7 +50,7 @@ impl TryFrom<&str> for PasswordConstraint {
         let password = String::from(&captures[4]);
 
         Ok(PasswordConstraint {
-            range: Range { lower, upper },
+            range: (lower..upper),
             letter: *letter,
             password,
         })
