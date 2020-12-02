@@ -72,34 +72,3 @@ where
 {
     passwords.iter().filter(|pc| constraint(*pc)).count()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn range_bounds_check() {
-        let range = Range {
-            lower: 5,
-            upper: 15,
-        };
-
-        assert!(range.in_bounds(5));
-        assert!(range.in_bounds(10));
-        assert!(range.in_bounds(15));
-
-        assert!(!range.in_bounds(0));
-        assert!(!range.in_bounds(20));
-    }
-
-    #[test]
-    fn parse_password_constraint() {
-        let input = "1-3 a: abcde";
-        let constraint = PasswordConstraint::try_from(input).unwrap();
-
-        assert_eq!(constraint.range.lower, 1);
-        assert_eq!(constraint.range.upper, 3);
-        assert_eq!(constraint.letter, 'a');
-        assert_eq!(constraint.password, "abcde");
-    }
-}
