@@ -31,8 +31,13 @@ impl TobogganMap {
         }
     }
 
-    pub fn rows(&self) -> usize {
-        self.map.len()
+    pub fn trees_along<F: Fn(usize) -> (usize, usize)>(&self, angle: F) -> usize {
+        (0..self.map.len())
+            .filter(|i| {
+                let (x, y) = angle(*i);
+                self.at(x, y) == Position::Tree
+            })
+            .count()
     }
 }
 
@@ -48,29 +53,15 @@ fn read_input() -> Vec<Vec<char>> {
 
 fn first(map: &TobogganMap) -> usize {
     // As we move 3 right, 1 down, we need to make `rows` moves
-    (0..map.rows())
-        .filter(|i| map.at(*i * 3, *i) == Position::Tree)
-        .count()
+    map.trees_along(|i| (i * 3, i))
 }
 
 fn second(map: &TobogganMap) -> usize {
-    let a = (0..map.rows())
-        .filter(|i| map.at(*i, *i) == Position::Tree)
-        .count();
-
+    let a = map.trees_along(|i| (i, i));
     let b = first(map);
-
-    let c = (0..map.rows())
-        .filter(|i| map.at(*i * 5, *i) == Position::Tree)
-        .count();
-
-    let d = (0..map.rows())
-        .filter(|i| map.at(*i * 7, *i) == Position::Tree)
-        .count();
-
-    let e = (0..map.rows())
-        .filter(|i| map.at(*i, *i * 2) == Position::Tree)
-        .count();
+    let c = map.trees_along(|i| (i * 5, i));
+    let d = map.trees_along(|i| (i * 7, i));
+    let e = map.trees_along(|i| (i, i * 2));
 
     a * b * c * d * e
 }
