@@ -107,6 +107,7 @@ fn increased_validation(passport: &str) -> bool {
 
 fn main() {
     let passports = parse_input();
+    dbg!(&passports.len());
 
     let valid = passports.iter().filter(|x| is_valid(x)).count();
     dbg!(&valid);
