@@ -29,6 +29,19 @@ fn get_seat_id(x: &str) -> u32 {
 fn main() {
     let input = read_input();
 
-    let highest_seat_id = input.iter().map(|x| get_seat_id(x)).max().unwrap();
+    let mut seat_ids: Vec<_> = input.iter().map(|x| get_seat_id(x)).collect();
+    let highest_seat_id = seat_ids.iter().max().unwrap();
     dbg!(&highest_seat_id);
+
+    // Find our seat id
+    seat_ids.sort();
+
+    for i in 1..seat_ids.len() {
+        let x = seat_ids[i];
+        let y = seat_ids[i - 1];
+
+        if x - y == 2 {
+            dbg!((x, y));
+        }
+    }
 }
