@@ -55,6 +55,20 @@ fn can_contain<'a>(
     false
 }
 
+fn count_contents<'a>(
+    required_contents: &'a HashMap<Bag<'a>, Vec<BagRequirement<'a>>>,
+    bag: &'a Bag<'a>,
+) -> u32 {
+    // We must contain the current bag at least
+    let mut count = 1;
+
+    for requirement in &required_contents[bag] {
+        count += count_contents(required_contents, &requirement.bag) * requirement.count;
+    }
+
+    count
+}
+
 fn main() {
     let contents = std::fs::read_to_string("input.txt").unwrap();
     let rules: Vec<_> = contents.lines().collect();
@@ -110,4 +124,7 @@ fn main() {
     let count = possible.len();
 
     dbg!(&count);
+
+    let bags_inside = count_contents(&required_contents, &to_find) - 1;
+    dbg!(&bags_inside);
 }
