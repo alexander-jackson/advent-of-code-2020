@@ -18,17 +18,17 @@ fn find_sum_pair(subset: &[usize], value: usize) -> Option<(usize, usize)> {
     None
 }
 
-fn find_first_violation(values: &[usize], window_size: usize) -> usize {
+fn find_first_violation(values: &[usize], window_size: usize) -> Option<usize> {
     for i in window_size..values.len() {
         if find_sum_pair(&values[i - window_size..i], values[i]).is_none() {
-            return values[i];
+            return Some(values[i]);
         }
     }
 
-    0
+    None
 }
 
-fn find_contiguous_set(values: &[usize], to_find: usize) -> &[usize] {
+fn find_contiguous_set(values: &[usize], to_find: usize) -> Option<&[usize]> {
     // Try each index
     for i in 0..values.len() {
         let mut sum = values[i];
@@ -37,14 +37,14 @@ fn find_contiguous_set(values: &[usize], to_find: usize) -> &[usize] {
             sum += values[j];
 
             if sum == to_find {
-                return &values[i..=j];
+                return Some(&values[i..=j]);
             } else if sum > to_find {
                 break;
             }
         }
     }
 
-    values
+    None
 }
 
 fn main() {
@@ -55,16 +55,16 @@ fn main() {
         .map(|x| usize::from_str(x).unwrap())
         .collect();
 
-    dbg!(&values);
+    let first_violation =
+        find_first_violation(&values, 25).expect("Failed to find anything that violated the rules");
 
-    let first_violation = find_first_violation(&values, 25);
-    dbg!(&first_violation);
+    println!("Part 1 Solution: {}", first_violation);
 
-    let contiguous_set = find_contiguous_set(&values, first_violation);
-    dbg!(&contiguous_set);
+    let contiguous_set =
+        find_contiguous_set(&values, first_violation).expect("Failed to find a contigious set");
 
     let min = contiguous_set.iter().min().unwrap();
     let max = contiguous_set.iter().max().unwrap();
 
-    println!("Result: {}", min + max);
+    println!("Part 2 Solution: {}", min + max);
 }

@@ -70,6 +70,6 @@ fn main() {
     let input = read_input();
     let map = TobogganMap::new(input);
 
-    dbg!(first(&map));
-    dbg!(second(&map));
+    println!("Part 1 Solution: {}", first(&map));
+    println!("Part 2 Solution: {}", second(&map));
 }

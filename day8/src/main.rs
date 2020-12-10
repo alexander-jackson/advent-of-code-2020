@@ -111,12 +111,11 @@ fn main() {
     let mut machine = Machine::new(instructions);
 
     let value = machine.simulate_until_loop();
-    dbg!(&value);
+    println!("Part 1 Solution: {}", value);
 
     for i in 0..lines.len() {
         machine.reset();
         machine.flip(i);
         let value = machine.simulate_until_loop();
-        dbg!(&value);
     }
 }

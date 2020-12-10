@@ -24,7 +24,7 @@ fn count_combinations(adapters: &[i64]) -> i64 {
         counts.insert(i, routes);
     }
 
-    dbg!(counts[&end])
+    counts[&end]
 }
 
 fn main() {
@@ -36,7 +36,6 @@ fn main() {
         .collect();
 
     formatted.sort();
-    dbg!(&formatted);
 
     let one_gaps = formatted
         .windows(2)
@@ -47,8 +46,6 @@ fn main() {
         .count()
         + 1;
 
-    dbg!(&one_gaps);
-
     let three_gaps = formatted
         .windows(2)
         .filter(|window| match window {
@@ -58,10 +55,9 @@ fn main() {
         .count()
         + 1;
 
-    dbg!(&three_gaps);
-
-    println!("Solution: {}", one_gaps * three_gaps);
+    println!("Part 1 Solution: {}", one_gaps * three_gaps);
 
     let combinations = count_combinations(&formatted);
-    dbg!(&combinations);
+
+    println!("Part 2 Solution: {}", combinations);
 }

@@ -123,8 +123,9 @@ fn main() {
 
     let count = possible.len();
 
-    dbg!(&count);
+    println!("Part 1 Solution: {}", count);
 
     let bags_inside = count_contents(&required_contents, &to_find) - 1;
-    dbg!(&bags_inside);
+
+    println!("Part 2 Solution: {}", bags_inside);
 }

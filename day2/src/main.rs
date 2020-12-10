@@ -4,12 +4,12 @@ fn main() {
     let constraints = day2::read_input();
 
     println!(
-        "Valid: {}",
+        "Part 1 Solution: {}",
         day2::valid_passwords(&constraints, PasswordConstraint::basic)
     );
 
     println!(
-        "Valid: {}",
+        "Part 2 Solution: {}",
         day2::valid_passwords(&constraints, PasswordConstraint::complex)
     );
 }

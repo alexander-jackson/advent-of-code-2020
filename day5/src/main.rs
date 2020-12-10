@@ -31,7 +31,8 @@ fn main() {
 
     let mut seat_ids: Vec<_> = input.iter().map(|x| get_seat_id(x)).collect();
     let highest_seat_id = seat_ids.iter().max().unwrap();
-    dbg!(&highest_seat_id);
+
+    println!("Part 1 Solution: {}", highest_seat_id);
 
     // Find our seat id
     seat_ids.sort();
@@ -41,7 +42,7 @@ fn main() {
         let y = seat_ids[i - 1];
 
         if x - y == 2 {
-            dbg!((x, y));
+            println!("Part 2 Solution: {}", (x + y) / 2);
         }
     }
 }
