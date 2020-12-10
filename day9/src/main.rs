@@ -28,6 +28,25 @@ fn find_first_violation(values: &[usize], window_size: usize) -> usize {
     0
 }
 
+fn find_contiguous_set(values: &[usize], to_find: usize) -> &[usize] {
+    // Try each index
+    for i in 0..values.len() {
+        let mut sum = values[i];
+
+        for j in i + 1..values.len() {
+            sum += values[j];
+
+            if sum == to_find {
+                return &values[i..=j];
+            } else if sum > to_find {
+                break;
+            }
+        }
+    }
+
+    values
+}
+
 fn main() {
     let input = std::fs::read_to_string("input.txt").unwrap();
     let values: Vec<_> = input
@@ -40,4 +59,12 @@ fn main() {
 
     let first_violation = find_first_violation(&values, 25);
     dbg!(&first_violation);
+
+    let contiguous_set = find_contiguous_set(&values, first_violation);
+    dbg!(&contiguous_set);
+
+    let min = contiguous_set.iter().min().unwrap();
+    let max = contiguous_set.iter().max().unwrap();
+
+    println!("Result: {}", min + max);
 }
