@@ -79,8 +79,6 @@ impl Orienteer {
                 'F' => self.position += self.heading.modifier(value),
                 _ => unreachable!(),
             }
-
-            dbg!(&self.position);
         }
 
         self.position
@@ -109,8 +107,6 @@ fn main() {
             (modifier, value)
         })
         .collect();
-
-    dbg!(&moves);
 
     let mut orienteer = Orienteer::new();
     let position = orienteer.simulate(moves);
