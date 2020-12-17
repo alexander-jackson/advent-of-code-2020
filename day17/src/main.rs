@@ -40,9 +40,11 @@ impl From<char> for State {
 #[derive(Clone, Debug, Default)]
 struct Space<P> {
     data: HashMap<P, State>,
+    on: usize,
 }
 
 impl<P: Eq + Hash + Copy + Surround> Space<P> {
+    /// Counts the number of active cubes around a given point.
     fn active_surroundings(&self, point: P) -> usize {
         point
             .get_surroundings()
@@ -73,7 +75,11 @@ impl<P: Eq + Hash + Copy + Surround> Space<P> {
         let mut cubes = HashSet::new();
 
         // For each point that is active
-        for (p, _) in self.data.iter().filter(|(_, v)| **v == State::On) {
+        for p in self
+            .data
+            .iter()
+            .filter_map(|(p, v)| if *v == State::On { Some(p) } else { None })
+        {
             let surroundings = p.get_surroundings();
 
             for s in surroundings {
@@ -92,19 +98,24 @@ impl<P: Eq + Hash + Copy + Surround> Space<P> {
 impl<P: Eq + Hash + Copy + Surround> Iterator for Space<P> {
     type Item = usize;
 
+    /// Returns the number of cubes that are on after each iteration.
     fn next(&mut self) -> Option<Self::Item> {
         let turn_off = self.check_active_cubes();
         let turn_on = self.check_inactive_cubes();
 
-        for p in turn_off {
-            self.data.insert(p, State::Off);
+        for p in &turn_off {
+            self.data.insert(*p, State::Off);
         }
 
-        for p in turn_on {
-            self.data.insert(p, State::On);
+        for p in &turn_on {
+            self.data.insert(*p, State::On);
         }
 
-        Some(self.data.iter().filter(|(_, v)| **v == State::On).count())
+        // Update the internal state
+        self.on += turn_on.len();
+        self.on -= turn_off.len();
+
+        Some(self.on)
     }
 }
 
@@ -120,7 +131,9 @@ impl<P: Eq + Hash + From<(usize, usize)>> From<Lines<'_>> for Space<P> {
             }
         }
 
-        Space { data }
+        let on = data.values().filter(|v| **v == State::On).count();
+
+        Space { data, on }
     }
 }
 
@@ -135,5 +148,5 @@ fn main() {
     let space: Space<Point4D> = Space::from(input.lines());
 
     let solution = space.skip(5).next().unwrap();
-    println!("Part 1 Solution: {}", solution);
+    println!("Part 2 Solution: {}", solution);
 }
