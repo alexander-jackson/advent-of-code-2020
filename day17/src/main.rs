@@ -53,20 +53,21 @@ impl<P: Eq + Hash + Copy + Surround> Space<P> {
             .count()
     }
 
-    /// Checks all active cubes and returns the ones that should be turned off.
-    fn check_active_cubes(&self) -> HashSet<P> {
+    /// Returns an iterator over the active points in the current state.
+    fn iter_active_points(&self) -> impl Iterator<Item = P> + '_ {
         self.data
             .iter()
-            .filter_map(|(k, v)| {
-                let active = self.active_surroundings(*k);
-
-                if *v == State::On && (active < 2 || active > 3) {
-                    Some(k)
-                } else {
-                    None
-                }
+            .filter_map(|(point, state)| match *state {
+                State::On => Some(point),
+                State::Off => None,
             })
             .copied()
+    }
+
+    /// Checks all active cubes and returns the ones that should be turned off.
+    fn check_active_cubes(&self) -> HashSet<P> {
+        self.iter_active_points()
+            .filter(|point| !(2..=3).contains(&self.active_surroundings(*point)))
             .collect()
     }
 
@@ -75,14 +76,17 @@ impl<P: Eq + Hash + Copy + Surround> Space<P> {
         let mut cubes = HashSet::new();
 
         // For each point that is active
-        for p in self
-            .data
-            .iter()
-            .filter_map(|(p, v)| if *v == State::On { Some(p) } else { None })
-        {
+        for p in self.iter_active_points() {
+            // Get the surrounding points in this coordinate space
             let surroundings = p.get_surroundings();
 
             for s in surroundings {
+                // Check we haven't already added it
+                if cubes.contains(&s) {
+                    continue;
+                }
+
+                // Check their active surroundings
                 if self.active_surroundings(s) == 3
                     && *self.data.get(&s).unwrap_or_default() == State::Off
                 {
@@ -120,6 +124,7 @@ impl<P: Eq + Hash + Copy + Surround> Iterator for Space<P> {
 }
 
 impl<P: Eq + Hash + From<(usize, usize)>> From<Lines<'_>> for Space<P> {
+    /// Creates a [`Space`] from [`Lines`], usually from a file.
     fn from(lines: Lines) -> Self {
         let mut data = HashMap::new();
 
